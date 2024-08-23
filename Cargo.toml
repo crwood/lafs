@@ -1,0 +1,31 @@
+[package]
+name = "lafs"
+version = "0.0.1"
+edition = "2021"
+description = "Least-Authority File Store utils"
+readme = "README.md"
+license = "MIT"
+repository = "https://github.com/crwood/lafs"
+keywords = [
+    "allmydata",
+    "tahoe-lafs",
+    "tahoe",
+    "lafs",
+]
+categories = ["cryptography"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "lafs"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+bitcoin_hashes = "0.14.0"
+data-encoding = "2.6.0"
+pyo3 = "0.22.2"
+rsa = "0.10.0-pre.2"
+
+[dev-dependencies]
+rand = "0.8.5"
+serde = "1.0"
+serde_yaml = "0.9"
