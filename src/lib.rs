@@ -11,68 +11,64 @@ pub use crate::util::base32;
 pub use crate::util::hashutil;
 pub use crate::util::netstring;
 
-#[pyfunction]
-#[pyo3(name = "b2a")]
-fn base32_b2a(py: Python, b: &[u8]) -> PyObject {
-    let result = base32::b2a(b);
-    PyBytes::new_bound(py, &result).into()
-}
-
-#[pyfunction]
-#[pyo3(name = "tagged_hash")]
-#[pyo3(signature = (tag, val, truncate_to = 32))]
-fn hashutil_tagged_hash(py: Python, tag: &[u8], val: &[u8], truncate_to: usize) -> PyObject {
-    let result = hashutil::tagged_hash(tag, val, truncate_to);
-    PyBytes::new_bound(py, &result).into()
-}
-
-#[pyfunction]
-#[pyo3(name = "ssk_writekey_hash")]
-fn hashutil_ssk_writekey_hash(py: Python, privkey: &[u8]) -> PyObject {
-    let result = hashutil::ssk_writekey_hash(privkey);
-    PyBytes::new_bound(py, &result).into()
-}
-
-#[pyfunction]
-#[pyo3(name = "ssk_pubkey_fingerprint_hash")]
-fn hashutil_ssk_pubkey_fingerprint_hash(py: Python, pubkey: &[u8]) -> PyObject {
-    let result = hashutil::ssk_pubkey_fingerprint_hash(pubkey);
-    PyBytes::new_bound(py, &result).into()
-}
-
-#[pyfunction]
-#[pyo3(name = "netstring")]
-fn netstring_netstring(py: Python, s: &[u8]) -> PyObject {
-    let result = netstring::netstring(s);
-    PyBytes::new_bound(py, &result).into()
-}
-
 #[pymodule]
-fn lafs(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    let base32_module = PyModule::new_bound(m.py(), "base32")?;
-    base32_module.add_function(wrap_pyfunction!(base32_b2a, &base32_module)?)?;
+mod lafs {
+    use super::*;
 
-    let hashutil_module = PyModule::new_bound(m.py(), "hashutil")?;
-    hashutil_module.add_function(wrap_pyfunction!(hashutil_tagged_hash, &hashutil_module)?)?;
-    hashutil_module.add_function(wrap_pyfunction!(
-        hashutil_ssk_writekey_hash,
-        &hashutil_module
-    )?)?;
-    hashutil_module.add_function(wrap_pyfunction!(
-        hashutil_ssk_pubkey_fingerprint_hash,
-        &hashutil_module
-    )?)?;
+    #[pymodule]
+    mod util {
+        use super::*;
 
-    let netstring_module = PyModule::new_bound(m.py(), "netstring")?;
-    netstring_module.add_function(wrap_pyfunction!(netstring_netstring, &base32_module)?)?;
+        #[pymodule]
+        mod base32 {
+            use super::*;
+            use crate::util::base32;
 
-    let util_module = PyModule::new_bound(m.py(), "util")?;
-    util_module.add_submodule(&base32_module)?;
-    util_module.add_submodule(&hashutil_module)?;
-    util_module.add_submodule(&netstring_module)?;
-    m.add_submodule(&util_module)?;
+            #[pyfunction]
+            fn b2a(py: Python, b: &[u8]) -> PyObject {
+                let result = base32::b2a(b);
+                PyBytes::new_bound(py, &result).into()
+            }
+        }
 
-    Ok(())
+        #[pymodule]
+        mod hashutil {
+            use super::*;
+            use crate::util::hashutil;
+
+            #[pyfunction]
+            #[pyo3(signature = (tag, val, truncate_to = 32))]
+            fn tagged_hash(py: Python, tag: &[u8], val: &[u8], truncate_to: usize) -> PyObject {
+                let result = hashutil::tagged_hash(tag, val, truncate_to);
+                PyBytes::new_bound(py, &result).into()
+            }
+
+            #[pyfunction]
+            fn ssk_writekey_hash(py: Python, privkey: &[u8]) -> PyObject {
+                let result = hashutil::ssk_writekey_hash(privkey);
+                PyBytes::new_bound(py, &result).into()
+            }
+
+            #[pyfunction]
+            fn ssk_pubkey_fingerprint_hash(py: Python, pubkey: &[u8]) -> PyObject {
+                let result = hashutil::ssk_pubkey_fingerprint_hash(pubkey);
+                PyBytes::new_bound(py, &result).into()
+            }
+        }
+
+        #[pymodule]
+        mod netstring {
+            use super::*;
+            use crate::util::netstring;
+
+            #[pyfunction]
+            #[pyo3(name = "netstring")]
+            fn py_netstring(py: Python, s: &[u8]) -> PyObject {
+                let result = netstring::netstring(s);
+                PyBytes::new_bound(py, &result).into()
+            }
+        }
+    }
 }
 
 pub fn derive_lafs_mutable(private_key_pem: &str, format: &str) -> String {
