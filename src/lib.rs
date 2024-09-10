@@ -1,5 +1,5 @@
 use rsa::pkcs1::DecodeRsaPrivateKey;
-use rsa::pkcs8::{EncodePrivateKey, EncodePublicKey};
+use rsa::pkcs8::{DecodePrivateKey, EncodePrivateKey, EncodePublicKey};
 use rsa::RsaPrivateKey;
 
 use pyo3::prelude::*;
@@ -72,8 +72,10 @@ mod lafs {
 }
 
 pub fn derive_lafs_mutable(private_key_pem: &str, format: &str) -> String {
-    // TODO: Support pkcs8?
-    let private_key = RsaPrivateKey::from_pkcs1_pem(private_key_pem).unwrap();
+    let private_key = match RsaPrivateKey::from_pkcs1_pem(private_key_pem) {
+        Ok(key) => key,
+        Err(_) => RsaPrivateKey::from_pkcs8_pem(private_key_pem).unwrap(),
+    };
     let public_key = private_key.to_public_key();
 
     let privkey_der = private_key.to_pkcs8_der().unwrap();
