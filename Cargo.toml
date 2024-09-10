@@ -23,7 +23,8 @@ crate-type = ["cdylib", "rlib"]
 bitcoin_hashes = "0.14.0"
 data-encoding = "2.6.0"
 pyo3 = "0.22.2"
-rsa = "0.10.0-pre.2"
+# For compatibility with pkcs8-0.11: https://github.com/RustCrypto/RSA/pull/446
+rsa = { git = "https://github.com/RustCrypto/RSA.git", rev = "aeedb5adf5297892fcb9e11f7c0f6c0157005c58" }
 
 [dev-dependencies]
 rand = "0.8.5"
