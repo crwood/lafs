@@ -2,8 +2,8 @@ use rsa::pkcs1::DecodeRsaPrivateKey;
 use rsa::pkcs8::{DecodePrivateKey, EncodePrivateKey, EncodePublicKey};
 use rsa::RsaPrivateKey;
 
-use pyo3::prelude::*;
-use pyo3::types::PyBytes;
+// use pyo3::prelude::*;
+// use pyo3::types::PyBytes;
 
 pub mod util;
 
@@ -11,65 +11,65 @@ pub use crate::util::base32;
 pub use crate::util::hashutil;
 pub use crate::util::netstring;
 
-#[pymodule]
-mod lafs {
-    use super::*;
-
-    #[pymodule]
-    mod util {
-        use super::*;
-
-        #[pymodule]
-        mod base32 {
-            use super::*;
-            use crate::util::base32;
-
-            #[pyfunction]
-            fn b2a(py: Python, b: &[u8]) -> PyObject {
-                let result = base32::b2a(b);
-                PyBytes::new_bound(py, &result).into()
-            }
-        }
-
-        #[pymodule]
-        mod hashutil {
-            use super::*;
-            use crate::util::hashutil;
-
-            #[pyfunction]
-            #[pyo3(signature = (tag, val, truncate_to = 32))]
-            fn tagged_hash(py: Python, tag: &[u8], val: &[u8], truncate_to: usize) -> PyObject {
-                let result = hashutil::tagged_hash(tag, val, truncate_to);
-                PyBytes::new_bound(py, &result).into()
-            }
-
-            #[pyfunction]
-            fn ssk_writekey_hash(py: Python, privkey: &[u8]) -> PyObject {
-                let result = hashutil::ssk_writekey_hash(privkey);
-                PyBytes::new_bound(py, &result).into()
-            }
-
-            #[pyfunction]
-            fn ssk_pubkey_fingerprint_hash(py: Python, pubkey: &[u8]) -> PyObject {
-                let result = hashutil::ssk_pubkey_fingerprint_hash(pubkey);
-                PyBytes::new_bound(py, &result).into()
-            }
-        }
-
-        #[pymodule]
-        mod netstring {
-            use super::*;
-            use crate::util::netstring;
-
-            #[pyfunction]
-            #[pyo3(name = "netstring")]
-            fn py_netstring(py: Python, s: &[u8]) -> PyObject {
-                let result = netstring::netstring(s);
-                PyBytes::new_bound(py, &result).into()
-            }
-        }
-    }
-}
+// #[pymodule]
+// mod lafs {
+//     use super::*;
+//
+//     #[pymodule]
+//     mod util {
+//         use super::*;
+//
+//         #[pymodule]
+//         mod base32 {
+//             use super::*;
+//             use crate::util::base32;
+//
+//             #[pyfunction]
+//             fn b2a(py: Python, b: &[u8]) -> PyObject {
+//                 let result = base32::b2a(b);
+//                 PyBytes::new_bound(py, &result).into()
+//             }
+//         }
+//
+//         #[pymodule]
+//         mod hashutil {
+//             use super::*;
+//             use crate::util::hashutil;
+//
+//             #[pyfunction]
+//             #[pyo3(signature = (tag, val, truncate_to = 32))]
+//             fn tagged_hash(py: Python, tag: &[u8], val: &[u8], truncate_to: usize) -> PyObject {
+//                 let result = hashutil::tagged_hash(tag, val, truncate_to);
+//                 PyBytes::new_bound(py, &result).into()
+//             }
+//
+//             #[pyfunction]
+//             fn ssk_writekey_hash(py: Python, privkey: &[u8]) -> PyObject {
+//                 let result = hashutil::ssk_writekey_hash(privkey);
+//                 PyBytes::new_bound(py, &result).into()
+//             }
+//
+//             #[pyfunction]
+//             fn ssk_pubkey_fingerprint_hash(py: Python, pubkey: &[u8]) -> PyObject {
+//                 let result = hashutil::ssk_pubkey_fingerprint_hash(pubkey);
+//                 PyBytes::new_bound(py, &result).into()
+//             }
+//         }
+//
+//         #[pymodule]
+//         mod netstring {
+//             use super::*;
+//             use crate::util::netstring;
+//
+//             #[pyfunction]
+//             #[pyo3(name = "netstring")]
+//             fn py_netstring(py: Python, s: &[u8]) -> PyObject {
+//                 let result = netstring::netstring(s);
+//                 PyBytes::new_bound(py, &result).into()
+//             }
+//         }
+//     }
+// }
 
 pub fn derive_lafs_mutable(private_key_pem: &str, format: &str) -> String {
     let private_key = match RsaPrivateKey::from_pkcs1_pem(private_key_pem) {
