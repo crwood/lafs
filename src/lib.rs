@@ -27,7 +27,7 @@ mod lafs {
             #[pyfunction]
             fn b2a(py: Python, b: &[u8]) -> PyObject {
                 let result = base32::b2a(b);
-                PyBytes::new_bound(py, &result).into()
+                PyBytes::new(py, &result).into()
             }
         }
 
@@ -40,19 +40,19 @@ mod lafs {
             #[pyo3(signature = (tag, val, truncate_to = 32))]
             fn tagged_hash(py: Python, tag: &[u8], val: &[u8], truncate_to: usize) -> PyObject {
                 let result = hashutil::tagged_hash(tag, val, truncate_to);
-                PyBytes::new_bound(py, &result).into()
+                PyBytes::new(py, &result).into()
             }
 
             #[pyfunction]
             fn ssk_writekey_hash(py: Python, privkey: &[u8]) -> PyObject {
                 let result = hashutil::ssk_writekey_hash(privkey);
-                PyBytes::new_bound(py, &result).into()
+                PyBytes::new(py, &result).into()
             }
 
             #[pyfunction]
             fn ssk_pubkey_fingerprint_hash(py: Python, pubkey: &[u8]) -> PyObject {
                 let result = hashutil::ssk_pubkey_fingerprint_hash(pubkey);
-                PyBytes::new_bound(py, &result).into()
+                PyBytes::new(py, &result).into()
             }
         }
 
@@ -65,7 +65,7 @@ mod lafs {
             #[pyo3(name = "netstring")]
             fn py_netstring(py: Python, s: &[u8]) -> PyObject {
                 let result = netstring::netstring(s);
-                PyBytes::new_bound(py, &result).into()
+                PyBytes::new(py, &result).into()
             }
         }
     }
