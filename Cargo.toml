@@ -20,12 +20,16 @@ name = "lafs"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-bitcoin_hashes = "0.14.0"
-data-encoding = "2.6.0"
-pyo3 = "0.22.2"
-rsa = "0.9.6"
+bitcoin_hashes = "0.16.0"
+data-encoding = "2.8.0"
+pyo3 = "0.23.5"
+rsa = "0.9.7"
+
+[build-dependencies]
+pyo3-build-config = "0.23.5"
 
 [dev-dependencies]
-rand = "0.8.5"
-serde = "1.0"
-serde_yaml = "0.9"
+# rsa does not yet support rand 0.9: https://github.com/RustCrypto/RSA/issues/466
+rand = "<0.9.0"
+serde = "1.0.218"
+serde_yaml = "0.9.34"
