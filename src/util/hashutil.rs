@@ -1,4 +1,4 @@
-use bitcoin_hashes::{sha256d, Hash, HashEngine};
+use bitcoin_hashes::{sha256d, HashEngine};
 
 use crate::util::netstring::netstring;
 
