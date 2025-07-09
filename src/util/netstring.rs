@@ -6,4 +6,5 @@ pub fn netstring(s: &[u8]) -> Vec<u8> {
 fn test_netstring() {
     // Values from allmydata.test.test_netstring
     assert_eq!(netstring(b"abc"), b"3:abc,");
+    assert_eq!(netstring(b"\x80"), b"1:\x80,");
 }
