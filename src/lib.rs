@@ -3,7 +3,7 @@ use rsa::pkcs8::{DecodePrivateKey, EncodePrivateKey, EncodePublicKey};
 use rsa::RsaPrivateKey;
 
 use pyo3::prelude::*;
-use pyo3::types::PyBytes;
+use pyo3::types::{PyBytes, PyString};
 
 pub mod util;
 
@@ -14,6 +14,13 @@ pub use crate::util::netstring;
 #[pymodule]
 mod lafs {
     use super::*;
+
+    #[pyfunction]
+    #[pyo3(signature = (private_key_pem, format = "SSK"))]
+    fn derive_mutable_uri(py: Python, private_key_pem: &str, format: &str) -> PyObject {
+        let result = crate::derive_mutable_uri(private_key_pem, format);
+        PyString::new(py, &result).into()
+    }
 
     #[pymodule]
     mod util {
