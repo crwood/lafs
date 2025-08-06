@@ -71,7 +71,7 @@ mod lafs {
     }
 }
 
-pub fn derive_lafs_mutable(private_key_pem: &str, format: &str) -> String {
+pub fn derive_mutable_uri(private_key_pem: &str, format: &str) -> String {
     let private_key = match RsaPrivateKey::from_pkcs1_pem(private_key_pem) {
         Ok(key) => key,
         Err(_) => RsaPrivateKey::from_pkcs8_pem(private_key_pem).unwrap(),
@@ -112,33 +112,33 @@ mod tests {
     }
 
     #[test]
-    fn test_derive_lafs_mutable_from_pkcs1() {
+    fn test_derive_mutable_uri_from_pkcs1() {
         let private_key = generate_rsa_private_key();
         let pem_pkcs1 = private_key.to_pkcs1_pem(LineEnding::LF).unwrap();
-        let result = derive_lafs_mutable(&pem_pkcs1, "SSK");
+        let result = derive_mutable_uri(&pem_pkcs1, "SSK");
         assert_eq!(result.starts_with("URI:SSK:"), true);
     }
 
     #[test]
-    fn test_derive_lafs_mutable_from_pkcs8() {
+    fn test_derive_mutable_uri_from_pkcs8() {
         let private_key = generate_rsa_private_key();
         let pem_pkcs8 = private_key.to_pkcs8_pem(LineEnding::LF).unwrap();
-        let result = derive_lafs_mutable(&pem_pkcs8, "SSK");
+        let result = derive_mutable_uri(&pem_pkcs8, "SSK");
         assert_eq!(result.starts_with("URI:SSK:"), true);
     }
 
     #[test]
-    fn test_derive_lafs_mutable_pkcs1_eq_pkcs8() {
+    fn test_derive_mutable_uri_pkcs1_eq_pkcs8() {
         let private_key = generate_rsa_private_key();
         let pem_pkcs1 = private_key.to_pkcs1_pem(LineEnding::LF).unwrap();
         let pem_pkcs8 = private_key.to_pkcs8_pem(LineEnding::LF).unwrap();
-        let result_pkcs1 = derive_lafs_mutable(&pem_pkcs1, "SSK");
-        let result_pkcs8 = derive_lafs_mutable(&pem_pkcs8, "SSK");
+        let result_pkcs1 = derive_mutable_uri(&pem_pkcs1, "SSK");
+        let result_pkcs8 = derive_mutable_uri(&pem_pkcs8, "SSK");
         assert_eq!(result_pkcs1, result_pkcs8);
     }
 
     #[test]
-    fn test_derive_lafs_mutable_from_vectors() {
+    fn test_derive_mutable_uri_from_vectors() {
         let contents = std::fs::read_to_string("tests/vectors/lafs.yaml").unwrap();
         let data: serde_yaml::Value = serde_yaml::from_str(&contents).unwrap();
         for vector in data["vector"].as_sequence().unwrap() {
@@ -152,7 +152,7 @@ mod tests {
                     "mdmf" => "MDMF",
                     _ => panic!("Unknown format: {:?}", format),
                 };
-                let result = derive_lafs_mutable(key, format);
+                let result = derive_mutable_uri(key, format);
                 let expected = vector["expected"].as_str().unwrap();
                 assert_eq!(result, expected);
             }

@@ -23,7 +23,7 @@ def test_sha256d(data, expected) -> None:
     assert b2a(digest) == expected
 
 
-def derive_lafs_mutable(private_key_pem: str, format: str) -> str:
+def derive_mutable_uri(private_key_pem: str, format: str) -> str:
     private_key = serialization.load_pem_private_key(
         private_key_pem.encode(),
         password=None,
@@ -46,7 +46,7 @@ def derive_lafs_mutable(private_key_pem: str, format: str) -> str:
     return f"URI:{format}:{writekey}:{fingerprint}"
 
 
-def test_derive_lafs_mutable() -> None:
+def test_derive_mutable_uri() -> None:
     with open(Path(__file__).parent / "vectors" / "lafs.yaml") as f:
         data = yaml.safe_load(f)
     for vector in data["vector"]:
@@ -60,6 +60,6 @@ def test_derive_lafs_mutable() -> None:
                 format = "MDMF"
             else:
                 raise ValueError(f"Unknown format: {format}")
-            result = derive_lafs_mutable(key, format)
+            result = derive_mutable_uri(key, format)
             expected = vector["expected"]
             assert result == expected
