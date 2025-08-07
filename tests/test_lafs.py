@@ -1,29 +1,15 @@
 from pathlib import Path
 
-import pytest
 import yaml
 
 from allmydata.util.base32 import b2a
-from allmydata.util.hashutil import (
-    _SHA256d_Hasher,  # XXX
-    ssk_pubkey_fingerprint_hash,
-    ssk_writekey_hash,
-)
+from allmydata.util.hashutil import ssk_pubkey_fingerprint_hash, ssk_writekey_hash
 from cryptography.hazmat.primitives import serialization
 
-
-@pytest.mark.parametrize("data, expected", [
-    (b"", b"lx3obytwcnm5gcucoucy4km7zqbycu2fix2vz5b6igmd6xkmsrla"),
-    (b"test", b"svgvusp5odm3rpg3gxjfejtyfgkx67xx7jwhj6eedg64l2bcbh2a"),
-])
-def test_sha256d(data, expected) -> None:
-    hasher = _SHA256d_Hasher()
-    hasher.update(data)
-    digest = hasher.digest()
-    assert b2a(digest) == expected
+from lafs import derive_mutable_uri
 
 
-def derive_lafs_mutable(private_key_pem: str, format: str) -> str:
+def py_derive_mutable_uri(private_key_pem: str, format: str) -> str:
     private_key = serialization.load_pem_private_key(
         private_key_pem.encode(),
         password=None,
@@ -46,7 +32,8 @@ def derive_lafs_mutable(private_key_pem: str, format: str) -> str:
     return f"URI:{format}:{writekey}:{fingerprint}"
 
 
-def test_derive_lafs_mutable() -> None:
+def test_derive_mutable_uri() -> None:
+
     with open(Path(__file__).parent / "vectors" / "lafs.yaml") as f:
         data = yaml.safe_load(f)
     for vector in data["vector"]:
@@ -60,6 +47,6 @@ def test_derive_lafs_mutable() -> None:
                 format = "MDMF"
             else:
                 raise ValueError(f"Unknown format: {format}")
-            result = derive_lafs_mutable(key, format)
             expected = vector["expected"]
-            assert result == expected
+            assert py_derive_mutable_uri(key, format) == expected
+            assert derive_mutable_uri(key, format) == expected
