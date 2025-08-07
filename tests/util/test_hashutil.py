@@ -1,5 +1,6 @@
 import pytest
 from allmydata.util.base32 import b2a as allmydata_b2a
+from allmydata.util.hashutil import _SHA256d_Hasher  # XXX
 from allmydata.util.hashutil import \
     ssk_pubkey_fingerprint_hash as allmydata_ssk_pubkey_fingerprint_hash
 from allmydata.util.hashutil import \
@@ -19,6 +20,17 @@ b2a = lafs.util.base32.b2a
 ssk_pubkey_fingerprint_hash = lafs.util.hashutil.ssk_pubkey_fingerprint_hash
 ssk_writekey_hash = lafs.util.hashutil.ssk_writekey_hash
 tagged_hash = lafs.util.hashutil.tagged_hash
+
+
+@pytest.mark.parametrize("data, expected", [
+    (b"test", b"svgvusp5odm3rpg3gxjfejtyfgkx67xx7jwhj6eedg64l2bcbh2a"),
+    (b"", b"lx3obytwcnm5gcucoucy4km7zqbycu2fix2vz5b6igmd6xkmsrla"),
+])
+def test_sha256d(data, expected) -> None:
+    hasher = _SHA256d_Hasher()
+    hasher.update(data)
+    digest = hasher.digest()
+    assert allmydata_b2a(digest) == expected
 
 
 @pytest.mark.parametrize(
