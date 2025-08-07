@@ -11,6 +11,8 @@ from allmydata.util.hashutil import (
 )
 from cryptography.hazmat.primitives import serialization
 
+from lafs import derive_mutable_uri
+
 
 @pytest.mark.parametrize("data, expected", [
     (b"", b"lx3obytwcnm5gcucoucy4km7zqbycu2fix2vz5b6igmd6xkmsrla"),
@@ -23,7 +25,7 @@ def test_sha256d(data, expected) -> None:
     assert b2a(digest) == expected
 
 
-def derive_mutable_uri(private_key_pem: str, format: str) -> str:
+def py_derive_mutable_uri(private_key_pem: str, format: str) -> str:
     private_key = serialization.load_pem_private_key(
         private_key_pem.encode(),
         password=None,
@@ -47,6 +49,7 @@ def derive_mutable_uri(private_key_pem: str, format: str) -> str:
 
 
 def test_derive_mutable_uri() -> None:
+
     with open(Path(__file__).parent / "vectors" / "lafs.yaml") as f:
         data = yaml.safe_load(f)
     for vector in data["vector"]:
@@ -60,6 +63,6 @@ def test_derive_mutable_uri() -> None:
                 format = "MDMF"
             else:
                 raise ValueError(f"Unknown format: {format}")
-            result = derive_mutable_uri(key, format)
             expected = vector["expected"]
-            assert result == expected
+            assert py_derive_mutable_uri(key, format) == expected
+            assert derive_mutable_uri(key, format) == expected
